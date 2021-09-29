@@ -32,10 +32,10 @@ class Game:
     def moveN(self, n: int):
         self.loc = (self.loc + n) % self.len_stone
         if n > 0:
-            errprint("Positive Move")
+            # errprint("Positive Move")
             self.command += ">" * n
         else:
-            errprint("Negative Move")
+            # errprint("Negative Move")
             self.command += "<" * abs(n)
 
 
@@ -62,33 +62,41 @@ class Game:
     def changeStoneN(self, n: int):
         newLetter = self.numDict[(self.letDict[self.stones[self.loc]] + n) % 27]
         self.stones[self.loc] = newLetter
-        errprint("stone #{self.loc} new letter: {newLetter}".format(**locals()))
+        # errprint("stone #{self.loc} new letter: {newLetter}".format(**locals()))
         if n > 0:
-            errprint("Positive Stone Inc")
+            # errprint("Positive Stone Inc")
             self.command += "+" * n
         else:
-            errprint("Negative Stone Inc")
+            # errprint("Negative Stone Inc")
             self.command += "-" * abs(n)
-
-        errprint(newLetter)
 
     def addLetter(self):
         self.command += "."
         pass
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
+
 def main():
     magic_phrase = input()
     game = Game(magic_phrase)
     errprint(magic_phrase)
-    errprint(game.words)
 
     for letter in magic_phrase:
         steps = game.stepsToLetter(game.stones[game.loc], letter)
-        game.changeStoneN(steps)
-        game.addLetter()
-        game.moveN(1)
+        nxt = game.stepsToLetter(game.stones[(game.loc + 1) % game.len_stone], letter)
+        temp = abs(nxt) + 1
+        
+        if letter == game.stones[game.loc]:
+            # errprint("Cheaper to Stay")
+            game.addLetter()
+        elif abs(nxt) + 1 < abs(steps):
+            # errprint("Cheaper to Move")
+            game.moveN(1)
+            game.changeStoneN(nxt)
+            game.addLetter()
+        else:
+            # errprint("Cheaper to Change")
+            game.changeStoneN(steps)
+            game.addLetter()
 
     print(game.command)
 
